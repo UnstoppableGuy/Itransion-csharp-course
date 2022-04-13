@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>@ViewBag.Title</title>
+	<link href="~/font-awesome/css/all.css" rel="stylesheet" />
+	<link href="~/css/site.css" , rel="stylesheet" />
+	<link href="~/css/footer.css" , rel="stylesheet" />
+	<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1">Takunov Pavel</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+					@if (!User.Identity.IsAuthenticated)
+					{
+						<a asp-controller="Account" asp-action="Login" class="btn btn-primary mx-1">Sign In</a>
+						<a asp-controller="Account" asp-action="Register" class="btn btn-primary mx-1">Sign Up</a>
+					}
+					else
+					{
+						<form method="post" asp-controller="Account" asp-action="Logout">
+							<button class="btn btn-danger mx-1" type="submit">Logout</button>
+						</form>
+					}
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<footer>
+		<div class="navbar navbar-dark navbar-expand-md bg-dark">
+			<div class="navbar-nav ml-auto">
+				<a class="nav-item nav-link" href="https://github.com/UnstoppableGuy">
+					<i class="fab fa-github fa-2x"></i>
+				</a>
+				<a class="nav-item nav-link" href="https://vk.com/unstoppableguy">
+					<i class="fab fa-vk fa-2x"></i>
+				</a>
+				<a class="nav-item nav-link" href="https://t.me/ustoppableguy">
+					<i class="fab fa-telegram fa-2x"></i>
+				</a>
+			</div>
+		</div>
+	</footer>
+	<div>
+		@RenderBody()
+	</div>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/lib/jquery/dist/jquery.js"></script>
+</body>
+</html>
