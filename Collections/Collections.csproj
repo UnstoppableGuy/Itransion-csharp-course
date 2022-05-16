@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Google.Cloud.Storage.V1" Version="3.6.0" />
+        <PackageReference Include="HigLabo.Net" Version="6.1.0" />
+        <PackageReference Include="Korzh.EasyQuery" Version="7.2.1" />
+        <PackageReference Include="Korzh.EasyQuery.Linq" Version="7.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.3" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+        <PackageReference Include="System.Native" Version="1.0.0-rc4-004707" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.bundle.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.bundle.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.bundle.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.bundle.min.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.esm.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.esm.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.esm.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.esm.min.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\bootstrap.min.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\change.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\ChangeTheme.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\Shared\script.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\Migrations" />
+    </ItemGroup>
+
+    <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

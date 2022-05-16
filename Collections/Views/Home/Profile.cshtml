@@ -1,0 +1,105 @@
+@model CollectionPR.Models.User
+@using CollectionPR.Services.Interfaces
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Web
+
+@{
+	var userService = ViewBag.userService as IUserService;
+	var collectionService = ViewBag.collectionService as ICollectionService;
+
+	var userId = userService!.GetUserByEmail(User!.Identity!.Name!).Result!.Id;
+
+	var userCollections = collectionService!.GetCollectionsByUserId(userId);
+}
+
+@functions
+{
+
+	private static string GetContentPart(string content)
+	{
+
+		const int contentPartSize = 500;
+
+		if (content.Length <= contentPartSize) return content;
+		content = content[..contentPartSize];
+		content += "...";
+
+		return content;
+
+	}
+
+}
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
+		var md, context;
+		function GetConvertedString(md, context) {
+			let converter = new showdown.Converter();
+			let html = converter.makeHtml(md);
+
+			document.getElementById(context).insertAdjacentHTML("afterend", html);
+		}
+	GetConvertedString();
+</script>
+
+<link rel="stylesheet" type="text/css" href="~/css/Collections/Collection.css" />
+
+<div class="d-flex align-items-center">
+	<div class="pos-flex text-size">
+		<br />
+		<span class="lng-ProfileText theme-main-text">Your profile: </span><span class="theme-main-text">@Model.FirstName @Model.LastName</span><br />
+		<span class="lng-NickNameRegister theme-main-text">Nickname: </span><span class="theme-main-text">@Model.NickName</span><br />
+		@* <span class="lng-AgeRegister theme-main-text">Age: </span><span class="thene-main-text">@Model.Age</span><br /> *@
+		<span class="lng-ProfileRegistrationDate theme-main-text">Registration date: </span><span class="theme-main-text">@Model.RegisterDate</span><br />
+		<span class="lng-ProfileRole theme-main-text">Role: </span><span class="theme-main-text"><b>@Model.Role</b></span>
+		@if (@Model.Role is "admin" or "super admin")
+		{
+			<form class="form-inline" asp-controller="AdminPanel" asp-action="AdminPanel">
+				<button type="submit" class="btn btn-danger text-dark lng-AdminPanel">Admin panel</button>
+			</form>
+		}
+	</div>
+</div>
+
+<br />
+
+<div class="CollectionsArea">
+
+	<h4 class="lng-YourCollections theme-main-text">Your collections:</h4>
+	<br />
+
+	<div class="col-prof-cont">
+		@foreach (var collection in userCollections.OrderByDescending(n => n.Id))
+		{
+			<div class="h-100 col-prof-item">
+				@if (collection.FileName != "")
+				{
+					<img src="@(collection.FileName)" class="rounded-start img-prof" alt="Collection photo" width="140px" height="80px">
+				}
+				<div class="card-body">
+					<h5 class="card-title">Collection:<a class="link" href="/Home/ViewCollection/@collection.Id">@collection.Title</a></h5>
+					<p class="card-title">Category: @collection.Theme</p>
+					<p class="card-title">Discription: @collection.Description</p>
+					@{
+						var collectionId = "description" + collection.Id;
+					}
+					<div id=@collectionId></div>
+				</div>
+				<div class="card-footer-new">
+					<p class="card-text"><small class="text-muted">@collection.LastEditDate</small></p>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+
+<script>
+
+	let pageTitle = (getCurrentLanguage() === 'en') ? 'Profile Page - CollectionPR' : 'Профиль - CollectionPR';
+
+	document.querySelector('title').innerHTML = pageTitle;
+</script>

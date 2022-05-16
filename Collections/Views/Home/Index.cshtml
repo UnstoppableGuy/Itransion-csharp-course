@@ -1,0 +1,90 @@
+﻿@model CollectionPR.Models.User
+@using CollectionPR.Services.Interfaces
+@using System.Web
+
+@{
+	var userService = ViewBag.userService as IUserService;
+	var collectionService = ViewBag.collectionService as ICollectionService;
+
+	var userCollections = collectionService!.GetAll();
+}
+
+@functions
+{
+
+	static string GetContentPart(string content)
+	{
+		const int contentPartSize = 500;
+
+		if (content.Length <= contentPartSize) return content;
+
+		content = content[..contentPartSize];
+		content += "...";
+
+		return content;
+
+	}
+
+}
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
+		var md, context;
+		function GetConvertedString(md, context) {
+			let converter = new showdown.Converter();
+			let html = converter.makeHtml(md);
+
+			document.getElementById(context).insertAdjacentHTML("afterend", html);
+		}
+	GetConvertedString();
+</script>
+
+<div class="text-center">
+	<h1 class="display-4 lng-WelcomeText theme-main-text">Welcome to CollectionPR!</h1>
+</div>
+
+@if (!User.Identity!.IsAuthenticated || Model == null)
+{
+	<div class="text-center">
+		<h3 class="lng-TextInUnregisteredIndex theme-main-text"><b>Register or Login to post your own collections or write comments.</b></h3>
+	</div>
+}
+
+@foreach (var collection in userCollections.OrderByDescending(n => n.Id))
+{
+	<div class="card mb-3 col-prof-item" style="max-width: 1400px;">
+		<div class="row g-0">
+			@if (collection.FileName != "")
+			{
+				<div class="col-md-2 d-flex">
+					<img src="@(collection.FileName)" class="img-fluid rounded-start align-self-center img-prof" height="1200px" width="120px" alt="Collection photo">
+				</div>
+			}
+			<div class="col-md-10">
+				<div class="card-body">
+					<span class="card-title">Title: <a class="link" href="/Home/ViewCollection/@collection.Id">@collection.Title</a></span>
+					<p class="card-title">Category: @collection.Theme</p>
+					@{
+						var collectionId = "description" + collection.Id;
+					}
+					<div id=@collectionId></div>
+					<p class="card-title">Description: @collection.Description</p>
+					@* <script>
+						md = "@Html.Raw(HttpUtility.JavaScriptStringEncode(GetContentPart(collection.Description!)))";
+						context = "@Html.Raw(HttpUtility.JavaScriptStringEncode(GetContentPart(collectionId)))";
+						GetConvertedString(md,  context);
+					</script> *@
+					<p class="card-text">Nickname: @userService!.GetUserById(collection.AuthorId!).Result!.NickName</p>
+					<p class="card-text text-muted">@collection.LastEditDate</p>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<script src="/js/ChangeLanguage.js"></script>
+
+<script>
+	let pageTitle = (getCurrentLanguage() === 'en') ? 'Home Page - CollectionPR' : 'Домашняя страница - CollectionPR';
+
+	document.querySelector('title').innerHTML = pageTitle;
+</script>

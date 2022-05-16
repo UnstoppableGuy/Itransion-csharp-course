@@ -1,0 +1,202 @@
+@model CollectionPR.Models.Item
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Web
+@using CollectionPR.Services.Interfaces
+
+@functions
+{
+    string GetTheUserId(string userId)
+    {
+        var data = ViewBag.userService as IUserService;
+
+        var userEmail = data!.GetUserById(userId).Result!.Email;
+
+        return userEmail;
+    }
+
+    string GetUserRole()
+    {
+        if (!User.Identity!.IsAuthenticated) return "user";
+
+        var data = ViewBag.userService as IUserService;
+
+        var userRole = data!.GetUserByEmail(User!.Identity!.Name!).Result!.Role;
+
+        return userRole!;
+    }
+
+    string GetAuthorId(int collectionId)
+    {
+        var data = ViewBag.collectionService as ICollectionService;
+
+        var authorId = data!.GetCollectionById(collectionId).AuthorId;
+
+        return authorId!;
+    }
+}
+
+@{
+    var collectionService = ViewBag.collectionService as ICollectionService;
+
+    var currentCollection = collectionService!.GetCollectionById(Model.CollectionId);
+
+    var commentService = ViewBag.commentService as ICommentService;
+}
+
+<link rel="stylesheet" title="theme" href="#">
+<link rel="stylesheet" type="text/css" href="~/css/Shared/main.css" />
+<link rel="stylesheet" type="text/css" href="~/css/CreateCollection/CreateCollection.css" />
+<link rel="stylesheet" type="text/css" href="~/css/Collections/Collection.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
+@if (Model.FileName != "")
+{
+    <div class="wrapper" align="center">
+        <img src="@(Model.FileName)" width="240px" height="240px" alt="User Photo">
+    </div>
+}
+
+<div class="pos-flex text-size">
+    <div class="theme-main-text">
+        <span class="lng-CollectionTitle text-size">Title: </span>
+        <span class="lng-CollectionTitle text-size">@Model.Title</span>
+    </div>
+
+    <div class="theme-main-text">
+        <span class="lng-CollectionSmallDescription text-size">Description:</span>
+        <span class="lng-CollectionSmallDescription text-size">@Model.Description</span>
+    </div>
+
+    <div class="theme-main-text">
+        <span class="lng-ParentCollection text-size">Collection:</span>
+        <ul>
+            <li>
+                <a
+                    href="/Home/ViewCollection/@Model.CollectionId">@collectionService!.GetCollectionById(Model.CollectionId).Title</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="theme-main-text">
+        <i class="fa-regular fa-thumbs-up fa-2x"></i>
+        <span id="LikeValue text-size">@Model.Likes.Count</span>
+    </div>
+
+    <div class="theme-main-text" style="margin-bottom: 12px">
+        @if (currentCollection!.AddDates == "true")
+        {
+            var itemClassNameDate = "lng-" + currentCollection.Theme + "ItemDate";
+            <span class="@itemClassNameDate">Date:</span>
+            <span>@Model.Date</span>
+        }
+    </div>
+
+    <div class="theme-main-text" style="margin-bottom: 12px">
+        @if (currentCollection!.AddBrands == "true")
+        {
+            var itemClassNameDate = "lng-" + currentCollection.Theme + "ItemBrand";
+            <span class="@itemClassNameDate">Brand:</span>
+            <span>@Model.Brand</span>
+        }
+    </div>
+
+
+
+    @* <div align="right" style="margin-bottom: 12px">
+        <h5 class="theme-other-text"><i>@Model.LastEditDate</i></h5>
+        </div> *@
+</div>
+<div style="display:flex">
+    @if (User!.Identity!.IsAuthenticated)
+    {
+        <div id="LikeArea" align="right" style="margin-bottom: 12px">
+            <form method="post" action="/Home/@Model.CollectionId/@Model.Id/ToggleLike" onsubmit="GetAmountOfLikes()">
+                <button id="LikeButton" for="LikeButton" class="btn btn-lg btn-outline-danger">Like!</button>
+            </form>
+        </div>
+    }
+    @if (GetTheUserId(GetAuthorId(Model.CollectionId)) == User.Identity!.Name || GetUserRole() != "user")
+    {
+        <form action="/Home/EditItem/@Model.CollectionId/@Model.Id">
+            <div align="right" style="margin-bottom: 20px">
+                <button class="lng-Edit btn btn-lg btn-outline-primary btn-block">Edit</button>
+            </div>
+        </form>
+
+        <form action="/Home/ViewItem/@Model.CollectionId/@Model.Id/DeleteItem">
+            <div align="right">
+                <button class="lng-Delete btn btn-lg btn-outline-danger btn-block">Delete</button>
+            </div>
+        </form>
+    }
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="text-center theme-main-text">
+        <h3 class="display-4 lng-CommentsLogo">Leave the comment!</h3><br />
+        <div class="input-group flex-nowrap">
+            <span class="input-group-text text-black lng-CommentLabel">Comment:</span>
+            <textarea type="text" class="form-control" id="commentToSend" aria-label="Username"
+            aria-describedby="addon-wrapping"
+            style="resize: none; overflow: hidden;min-height: 50px;max-height: 100px;"></textarea>
+            <input type="hidden" id="itemId" value="@Model.Id" />
+        </div><br />
+
+        <button type="button" class="btn btn-primary lng-Leave" id="sendButton"><b>Leave a comment!</b></button>
+    </div>
+}
+
+<h3 class="theme-main-text lng-CommentsTitle">Comments: </h3>
+
+<div class="card theme-main-text" id="newComment" style="width: 36rem;">
+    @foreach (var comment in commentService!.GetCommentsInItem(@Model.Id).OrderByDescending(n => n.Id))
+    {
+        <ul class="list-group list-group-flush" style="margin-bottom: 12px;">
+            <li class="list-group-item">@comment.UserNickName</li>
+            <li class="list-group-item">@comment.CommentText</li>
+            <li class="list-group-item">@comment.CommentWhen</li>
+        </ul>
+    }
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0-preview.2.22153.2/signalr.min.js"></script>
+<script src="/js/comments.js"></script>
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+
+<script>
+    let pageTitle = (getCurrentLanguage() === 'en') ? 'View Item - CollectionPR' : 'Просмотр предмета - CollectionPR';
+
+    document.querySelector('title').innerHTML = pageTitle;
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+    function GetAmountOfLikes() {
+        setTimeout(() => { Get(); }, 1500)
+        function Get() {
+            let url = "/Home/GetAmountOfLikes/@Model.Id";
+            let $j = jQuery.noConflict();
+            $.get(url, null, function (data) {
+                $("#LikeValue").html(data);
+            });
+        }
+    }
+</script>
+
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
+    function GetConvertedString() {
+        let converter = new showdown.Converter();
+        let md = "@Html.Raw(HttpUtility.JavaScriptStringEncode(@Model.Description))";
+        let html = converter.makeHtml(md);
+
+        document.getElementById("description").insertAdjacentHTML("afterend", html);
+    }
+
+    GetConvertedString();
+</script>

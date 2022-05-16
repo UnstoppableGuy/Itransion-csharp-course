@@ -1,0 +1,91 @@
+﻿@model IEnumerable<CollectionPR.Models.User>
+@using CollectionPR.Services.Interfaces
+
+<script src="~/js/AdminOptions.js"></script>
+
+@{
+    var userService = ViewBag.userService as IUserService;
+    
+    var currentUser = await userService!.GetUserByEmail(User!.Identity!.Name!);
+}
+
+<div class="container block2">
+   
+    <div class="container">
+        <aside style="display:flex;flex-direction:column;">
+            <button type="button" onclick="deleteCheckedContacts()" class="btn btn-danger btn-lg btn-block lng-Delete">Delete</button>
+            <button type="button" onclick="blockCheckedContacts()" class="btn btn-warning btn-lg btn-block lng-Block">Block</button>
+            <button type="button" onclick="unblockCheckedContacts()" class="btn btn-primary  btn-lg btn-block lng-Unblock">Unblock</button>
+            @if (@currentUser!.Role == "super admin")
+            {
+                <button type="button" onclick="promoteCheckedContacts()" class="btn btn-success btn-lg btn-block lng-Promote">Promote to admin</button>
+                <button type="button" onclick="demoteCheckedContacts()" class="btn btn btn-info btn-lg btn-block lng-Demote">Demote to user</button>
+            }
+        </aside>
+        <br/>
+        <table class="table table-hover table-responsive">
+            <thead>
+            <tr>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckIndeterminate">
+                    <label class="form-check-label theme-main-text" for="flexCheckIndeterminate">
+                        <b>Select all / Unselect all</b>
+                    </label>
+                </div>
+                <th class="theme-main-text">Id</th>
+                <th class="col-md-3 col-xs-3 lng-FirstNameRegister theme-main-text">User</th>
+                <th class="col-md-3 col-xs-3 lng-LastNameRegister theme-main-text"></th>
+                <th class="col-md-3 col-xs-3 lng-EnterEmailLogin theme-main-text">E-mail</th>
+                <th class="col-md-3 col-xs-3 lng-NickNameRegister theme-main-text">Nickname</th>
+                <th class="col-md-3 col-xs-3 lng-ProfileRole theme-main-text">Role:</th>
+                <th class="col-md-3 col-xs-3 lng-ProfileRegistrationDate theme-main-text">Registration</th>
+                <th class="col-md-3 col-xs-3 lng-UserStatus theme-main-text">Status</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            @foreach (var user in Model)
+            {
+                <tr>
+                    @if(@user.Role == "user" || @currentUser!.Role == "super admin")
+                    {
+                        <td><input class="user-checkbox" type="checkbox" name="@user.Id"></td>   
+                    }
+                    <th scope="row" class="theme-main-text">@user.Id</th>
+                    <td class="theme-main-text">@user.LastName</td>
+                    <td class="theme-main-text">@user.Email</td>
+                    <td class="theme-main-text">@user.NickName</td>
+                    <td class="theme-main-text">@user.Role</td>
+                    <td class="theme-main-text">@user.RegisterDate.ToString("d")</td>
+                    <td class="theme-main-text">@user.Status</td>                    
+                </tr>
+            }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script>$('#flexCheckIndeterminate').click(function(event) {   
+            if(this.checked) {
+                $(':checkbox').each(function() {
+                    this.checked = true;                        
+                });
+            } else {
+                $(':checkbox').each(function() {
+                    this.checked = false;                       
+                });
+            }
+        }); </script>
+        
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+
+<script>
+    let pageTitle = (getCurrentLanguage() === 'en') ? 'Admin Page - CollectionPR' : 'Панель администратора - CollectionPR';
+     
+    document.querySelector('title').innerHTML = pageTitle;
+</script>

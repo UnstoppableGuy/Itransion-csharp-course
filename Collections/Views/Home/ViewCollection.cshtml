@@ -1,0 +1,184 @@
+@model CollectionPR.Models.Collection;
+@using CollectionPR.Services.Interfaces;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Web
+
+@functions
+{
+	string GetUserRole()
+	{
+		if (!User.Identity!.IsAuthenticated)
+			return "user";
+
+		var data = ViewBag.userService as IUserService;
+
+		var userRole = data!.GetUserByEmail(User!.Identity!.Name!).Result!.Role;
+
+		return userRole!;
+	}
+
+	string GetTheUserId(string userId)
+	{
+		var data = ViewBag.userService as IUserService;
+
+		var userEmail = data!.GetUserById(userId).Result!.Email;
+
+		return userEmail;
+	}
+
+
+	static string GetContentPart(string content)
+	{
+		const int contentPartSize = 35;
+
+		if (content.Length <= contentPartSize) return content;
+
+		content = content[..contentPartSize];
+		content += "...";
+
+		return content;
+	}
+}
+
+<link rel="stylesheet" title="theme" href="#">
+<link rel="stylesheet" type="text/css" href="~/css/CreateCollection/CreateCollection.css" />
+<link rel="stylesheet" type="text/css" href="~/css/Collections/Collection.css" />
+<link rel="stylesheet" type="text/css" href="~/css/Shared/main.css"/>
+
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
+	var md, context;
+
+	function GetConvertedString(md, context) {
+		let converter = new showdown.Converter();
+		let html = converter.makeHtml(md);
+
+		document.getElementById(context).insertAdjacentHTML("afterend", html);
+	}
+</script>
+
+<div class="pos-flex text-size">
+
+	@if (Model.FileName != "")
+	{
+		<div style="margin-bottom: 12px" align="center">
+			<img src="@(Model.FileName)" class="img-prof" width="240px" height="240px" alt="User Photo">
+		</div>
+	}
+
+	<div class="col-md-auto theme-main-text">
+		<span class="lng-CollectionTitle theme-main-text">Title:</span>
+		<span class="theme-main-text">@Model.Title</span>
+	</div>
+
+	<div class="col-md-auto theme-main-text">
+		<span class="lng-CollectionSmallDescription theme-main-text">Description:</span>
+		<span class="theme-main-text">@Model.Description</span>
+	</div>
+
+	<div class="col-md-auto theme-main-text">
+		<span class="lng-CollectionTheme theme-main-text">Theme:</span>
+		<span class="theme-main-text">@Model.Theme</span>
+	</div>
+
+	<div class="col-md-auto theme-main-text">
+		<span class="theme-other-text"><i>@Model.LastEditDate</i></span>
+	</div>
+</div>
+
+@if (GetTheUserId(Model.AuthorId!) == User.Identity!.Name || GetUserRole() != "user")
+{
+	<div style="display:flex">
+	<form action="/Home/EditCollection/@Model.Id">
+		<div align="right" style="margin-bottom: 20px">
+			<button class="lng-Edit btn btn-lg btn-outline-primary btn-block">Edit</button>
+		</div>
+	</form>
+
+	<form action="/Home/ViewItem/@Model.Id/DeleteCollection" style="margin-bottom: 36px">
+		<div align="right">
+			<button class="lng-Delete btn btn-lg btn-outline-danger btn-block">Delete</button>
+		</div>
+	</form>
+	</div>
+}
+
+
+@switch (Model.CollectionItems!.Any())
+{
+	case false when (GetTheUserId(Model.AuthorId!) == User.Identity!.Name || GetUserRole() != "user"):
+		<div class="text-center col-md-auto">
+			<h3 class="lng-CollectionEmpty theme-main-text"><b>Your collection is empty, expand it by adding new item in collection.</b></h3>
+		</div>
+		break;
+	case false when GetTheUserId(Model.AuthorId!) != User.Identity!.Name:
+		<div class="text-center col-md-auto">
+			<h3 class="lng-CollectionEmptyNotUser theme-main-text"><b>This is collection is empty, author will expand id by adding new items.</b></h3>
+		</div>
+		break;
+	default:
+		{
+			<div class="row row-cols-1 row-cols-md-3 g-4 theme-main-text">
+				@foreach (var item in Model.CollectionItems!.ToList().OrderByDescending(n => n.Id))
+				{
+					<div class="col">
+						<div class="card-h-100">
+							@if (item.FileName != "")
+							{
+								@:<img style="display: block; margin: 0 auto" src="@item.FileName" class="rounded-start" alt="Collection photo" width="80px" height="80px">
+							}
+							<div class="card-body">
+								<h5 class="card-title"><a class="link" href="/Home/ViewItem/@item.CollectionId/@item.Id">@item.Title</a></h5>
+								@{
+									var itemId = "description" + item.Id;
+								}
+								<div id=@itemId></div>
+								<script>
+									md = "@Html.Raw(HttpUtility.JavaScriptStringEncode(GetContentPart(item.Description!)))";
+									context = "@Html.Raw(HttpUtility.JavaScriptStringEncode(GetContentPart(itemId)))";
+
+									GetConvertedString(md,  context);
+								</script>
+							</div>
+							<div class="card-footer-new">
+								<p class="card-text text-muted">@item.LastEditDate</p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+			break;
+		}
+}
+
+<br />
+
+@if (GetTheUserId(Model.AuthorId!) == User.Identity!.Name || GetUserRole() != "user")
+{
+	<form action="/Home/AddItem/@Model.Id">
+		<div class="text-center">
+			<button class="lng-AddItemButton btn btn-lg btn-outline-success btn-block">Add Item</button>
+		</div>
+	</form>
+}
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+
+<script>
+	let pageTitle = (getCurrentLanguage() === 'en') ? 'View Collection - CollectionPR' : 'Просмотр коллекции - CollectionPR';
+
+	document.querySelector('title').innerHTML = pageTitle;
+</script>
+
+<script>
+		function GetConvertedString() {
+			let converter = new showdown.Converter();
+			let md = "@Html.Raw(HttpUtility.JavaScriptStringEncode(@Model.Description))";
+			let html = converter.makeHtml(md);
+
+			document.getElementById("description").insertAdjacentHTML("afterend", html);
+		}
+
+	GetConvertedString();
+</script>

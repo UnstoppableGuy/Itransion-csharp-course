@@ -1,0 +1,45 @@
+html {
+  position: relative;
+  min-height: 100%;
+  font-size: 14px;
+}
+
+header {
+  font-family: "Comic Sans MS";
+  background-color: #adb5bd;
+}
+
+/* @media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+} */
+
+.theme-main-text {
+  color: black;
+  margin:12px;
+}
+
+.theme-other-text {
+  color: black;
+  margin: 12px;
+  opacity: 0.5;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: azure;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+footer {
+  font-family: "Comic Sans MS";
+  background-color: #adb5bd;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+}
+

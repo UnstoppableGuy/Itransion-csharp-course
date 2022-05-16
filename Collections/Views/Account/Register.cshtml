@@ -1,0 +1,71 @@
+﻿@model CollectionPR.ViewModels.RegisterViewModel
+
+<h2 class = "lng-NewUserRegistration theme-main-text">New User Registration</h2>
+<form method="post" asp-controller="Account" asp-action="Register">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div>
+        <label asp-for="Email" class="lng-EnterEmailLogin theme-main-text"></label><br />
+        <input asp-for="Email" class="form-control" placeholder="example@example.com"/>
+        <span asp-validation-for="Email"></span>
+    </div>
+    <br/>
+    <div>
+        <label asp-for="FirstName" class="lng-FirstNameRegister theme-main-text"></label><br />
+        <input asp-for="FirstName" class="form-control"/>
+        <span asp-validation-for="FirstName"></span>
+    </div>
+    <br/>
+    <div>
+        <label asp-for="LastName" class="lng-LastNameRegister theme-main-text"></label><br />
+        <input asp-for="LastName" class="form-control"/>
+        <span asp-validation-for="LastName"></span>
+    </div>
+    <br/>
+    <div>
+        <label asp-for="NickName" class="lng-NickNameRegister theme-main-text"></label><br />
+        <input asp-for="NickName" class="form-control"/>
+        <span asp-validation-for="NickName"></span>
+    </div>
+    <br/>
+    @* <div>
+        <label asp-for="Age" class="lng-AgeRegister theme-main-text"></label><br />
+        <input asp-for="Age" class="form-control" placeholder="33"/>
+        <span asp-validation-for="Age"></span>
+    </div>
+    <br/> *@
+    <div>
+        <label asp-for="Password" class="lng-NickNameRegister theme-main-text"></label><br />
+        <input asp-for="Password" class="form-control" placeholder="********"/>
+        <span asp-validation-for="Password"></span>
+    </div>
+    <br/>
+    <div>
+        <label asp-for="PasswordConfirm" class="lng-AgeRegister theme-main-text"></label><br />
+        <input asp-for="PasswordConfirm" class="form-control" placeholder="********"/>
+        <span asp-validation-for="PasswordConfirm"></span>
+    </div>
+    <br/>
+    
+   <div>
+           @Html.RadioButton("Role", "user", true)
+           <span class="theme-main-text">user</span> <br />
+           @Html.RadioButton("Role", "admin" )
+           <span class="theme-main-text">admin</span> <br />
+           @Html.RadioButton("Role", "super admin" )
+           <span class="theme-main-text">super admin</span> <br />
+    </div>
+
+    <br/>
+    <div class="form-group">
+        <button type="submit" class="btn btn-outline-dark lng-RegisterButton">Register!</button>
+    </div>
+</form>
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+
+<script>
+    let pageTitle = (getCurrentLanguage() === 'en') ? 'Register Page - CollectionPR' : 'Регистрация - CollectionPR';
+         
+    document.querySelector('title').innerHTML = pageTitle;
+</script>

@@ -1,0 +1,66 @@
+@model CollectionPR.ViewModels.EditCollectionViewModel
+@using CollectionPR.Services.Interfaces
+
+@{
+    var data = ViewBag.collectionService as ICollectionService;
+
+    var collectionId = ViewBag.collectionId;
+
+    var editingCollection = data!.GetCollectionById(collectionId);
+}
+
+<link rel="stylesheet" title="theme" href="#">
+<link rel="stylesheet" type="text/css" href="~/css/CreateCollection/CreateCollection.css"/>
+
+<form method="post" action="/Home/EditCollection/@collectionId" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" name="AuthorId" value="@collectionId" asp-for="CollectionId"/>
+    @if (editingCollection!.FileName != "")
+    {
+        <div class="drop-zone col-4" style="margin-bottom: 20px">
+            <div class="drop-zone__thumb" style="background-image: url('@(editingCollection!.FileName)');">
+            </div>
+            <span class="drop-zone__prompt theme-main-text"></span>
+            <input type="file" name="myFile" class="drop-zone__input" accept="image/*">
+        </div>
+    }
+    else
+    {
+        <div class="drop-zone col-4">
+            <span class="drop-zone__prompt lng-DropImage lng-DropImageCollection theme-main-text">Drop file here or click to upload</span>
+            <input type="file" name="myFile" class="drop-zone__input" accept="image/*"/>
+        </div>
+    }
+    
+    <br/>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text lng-CollectionTitle">Title:</span>
+        </div>
+        <input type="text" class="form-control" name="Title" aria-label="Title" value="@editingCollection!.Title" asp-for="Title">
+        <span asp-validation-for="Title"></span>
+    </div>
+    
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text lng-CollectionSmallDescription">Description:</span>
+      </div>
+      <textarea type="text" class="form-control" name="Description" aria-label="Description" value="@editingCollection!.Description" asp-for="Description"></textarea>
+      <span asp-validation-for="Description"></span>
+    </div>
+
+    <br/>
+    <button type="submit" class="btn btn-success lng-Edit theme-main-text">Create</button>
+</form>
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+<script src="/js/CreateCollection.js"></script>
+<script src="/js/DropZone.js"></script>
+
+<script>   
+    let pageTitle = (getCurrentLanguage() === 'en') ? 'Edit Collection Page - CollectionPR' : 'Редактирование коллекции - CollectionPR';
+         
+    document.querySelector('title').innerHTML = pageTitle;
+</script>

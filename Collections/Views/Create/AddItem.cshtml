@@ -1,0 +1,84 @@
+@model CollectionPR.ViewModels.ItemViewModel
+@using CollectionPR.Services.Interfaces
+
+@{
+    var data = ViewBag.collectionService as ICollectionService;
+
+    var collectionId = ViewBag.collectionId is int ? (int)ViewBag.collectionId : 0;
+
+    var collection = data!.GetCollectionById(collectionId);
+}
+
+<link rel="stylesheet" title="theme" href="#">
+<link rel="stylesheet" type="text/css" href="~/css/CreateCollection/CreateCollection.css"/>
+
+
+<form method="post" asp-action="AddItem" enctype="multipart/form-data">
+    
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" name="CollectionId" value="@collection!.Id" asp-for="CollectionId"/>
+    <div class="drop-zone col-4">
+        <span class="drop-zone__prompt lng-DropImage lng-DropImageCollection theme-main-text">Drop file here or click to upload</span>
+        <input type="file" name="myFile" class="drop-zone__input" accept="image/*"/>
+    </div>
+    <br/>
+    
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text lng-CollectionTitle">Title:</span>
+        </div>
+        <input type="text" class="form-control" name="Title" aria-label="Title" asp-for="Title">
+        <span asp-validation-for="Title"></span>
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text lng-CollectionSmallDescription">Description:</span>
+        </div>
+        <textarea type="text" class="form-control" name="Description" aria-label="Description" asp-for="Description"></textarea>
+        <span asp-validation-for="Description"></span>
+    </div>
+
+    <br/>
+
+    @if (collection.AddDates == "true")
+    {
+        var className = "lng-" + collection.Theme + "Date";
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text @className"></span>
+            </div>
+            <input type="date" class="form-control" name="Date" aria-label="Date" asp-for="Date">
+        </div>
+
+        <br/>
+    }
+
+    @if (collection.AddBrands == "true")
+    {
+        var className = "lng-" + collection.Theme + "Brand";
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text @className"></span>
+            </div>
+            <input type="text" class="form-control" name="Brand" aria-label="Date" asp-for="Brand">
+        </div>
+
+        <br/>
+    }
+    
+    <button type="submit" class="btn btn-success lng-CreateCollectionButton theme-main-text">Create</button>
+</form>
+
+<script src="/js/ChangeLanguage.js"></script>
+<script src="/js/ChangeTheme.js"></script>
+<script src="/js/CreateCollection.js"></script>
+<script src="/js/DropZone.js"></script>
+
+<script>   
+    let pageTitle = (getCurrentLanguage() === 'en') ? 'Add Item Page - CollectionPR' : 'Добавление предмета - CollectionPR';
+         
+    document.querySelector('title').innerHTML = pageTitle;
+</script>
